@@ -1,6 +1,6 @@
 {
   "name": "google-maps-mcp-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Model Context Protocol server for Google Maps Platform APIs - provides geocoding, places search, routing, and geospatial tools",
   "type": "module",
   "main": "dist/index.js",
