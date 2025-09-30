@@ -1,59 +1,59 @@
 #!/usr/bin/env node
 
 import { MCPServer, ServerConfig } from './server.js';
-import { GoogleMapsClient } from './utils/google-maps-client.js';
 import { ConfigurationError } from './utils/errors.js';
+import { GoogleMapsClient } from './utils/google-maps-client.js';
 
 // Import all tools
 import {
-  geocodeSearchTool,
-  geocodeReverseTool,
-  createGeocodeSearchHandler,
-  createGeocodeReverseHandler
+    createGeocodeReverseHandler,
+    createGeocodeSearchHandler,
+    geocodeReverseTool,
+    geocodeSearchTool
 } from './tools/geocoding.js';
 
 import {
-  placesSearchTextTool,
-  placesNearbyTool,
-  placesAutocompleteTool,
-  placesDetailsTool,
-  placesPhotosTool,
-  createPlacesSearchTextHandler,
-  createPlacesNearbyHandler,
-  createPlacesAutocompleteHandler,
-  createPlacesDetailsHandler,
-  createPlacesPhotosHandler
+    createPlacesAutocompleteHandler,
+    createPlacesDetailsHandler,
+    createPlacesNearbyHandler,
+    createPlacesPhotosHandler,
+    createPlacesSearchTextHandler,
+    placesAutocompleteTool,
+    placesDetailsTool,
+    placesNearbyTool,
+    placesPhotosTool,
+    placesSearchTextTool
 } from './tools/places.js';
 
 import {
-  routesComputeTool,
-  routesMatrixTool,
-  createRoutesComputeHandler,
-  createRoutesMatrixHandler
+    createRoutesComputeHandler,
+    createRoutesMatrixHandler,
+    routesComputeTool,
+    routesMatrixTool
 } from './tools/routes.js';
 
 import {
-  elevationGetTool,
-  timezoneGetTool,
-  geolocationEstimateTool,
-  createElevationGetHandler,
-  createTimezoneGetHandler,
-  createGeolocationEstimateHandler
+    createElevationGetHandler,
+    createGeolocationEstimateHandler,
+    createTimezoneGetHandler,
+    elevationGetTool,
+    geolocationEstimateTool,
+    timezoneGetTool
 } from './tools/utilities.js';
 
 import {
-  nearbyFindTool,
-  createNearbyFindHandler
+    createNearbyFindHandler,
+    nearbyFindTool
 } from './tools/nearby-find.js';
 
 import {
-  ipGeolocateTool,
-  createIpGeolocateHandler
+    createIpGeolocateHandler,
+    ipGeolocateTool
 } from './tools/ip-geolocate.js';
 
 import {
-  healthCheckTool,
-  createHealthCheckHandler
+    createHealthCheckHandler,
+    healthCheckTool
 } from './tools/health-check.js';
 
 function loadConfig(): ServerConfig {
@@ -121,13 +121,6 @@ async function main() {
 
     // Start the server
     server.start();
-
-    // Send a notification that the server is ready (optional)
-    server.sendNotification('server/ready', {
-      name: 'google-maps-mcp-server',
-      version: '1.0.0',
-      tools_count: 13
-    });
 
   } catch (error) {
     if (error instanceof ConfigurationError) {

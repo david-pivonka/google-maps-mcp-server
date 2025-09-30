@@ -1,7 +1,7 @@
+import { ServerConfig } from '../server.js';
 import { MCPTool } from '../types/mcp.js';
 import { GoogleMapsClient } from '../utils/google-maps-client.js';
-import { validateInput, IpGeolocateSchema } from '../utils/validation.js';
-import { ServerConfig } from '../server.js';
+import { IpGeolocateSchema, validateInput } from '../utils/validation.js';
 
 export const ipGeolocateTool: MCPTool = {
   name: 'ip_geolocate',
