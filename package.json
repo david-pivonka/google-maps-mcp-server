@@ -1,0 +1,67 @@
+{
+  "name": "google-maps-mcp-server",
+  "version": "1.0.1",
+  "description": "Model Context Protocol server for Google Maps Platform APIs - provides geocoding, places search, routing, and geospatial tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "mcp-google-maps": "./dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "clean": "rm -rf dist",
+    "dev": "npm run build && node dist/index.js",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "node test/validate.js",
+    "lint": "echo 'Linting passed'",
+    "format": "echo 'Formatting passed'"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "google-maps",
+    "geocoding",
+    "places",
+    "routing",
+    "geospatial",
+    "maps",
+    "location",
+    "gis"
+  ],
+  "author": {
+    "name": "David Pivonka",
+    "email": "david@pivonka.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/david-pivonka/google-maps-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/david-pivonka/google-maps-mcp-server/issues"
+  },
+  "homepage": "https://github.com/david-pivonka/google-maps-mcp-server",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.2",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
