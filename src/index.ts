@@ -34,7 +34,6 @@ import {
 class GoogleMapsMCPServer {
   private server: Server;
   private googleMapsClient: GoogleMapsClient;
-  private ipOverrideEnabled: boolean;
 
   constructor() {
     // Validate required environment variables
@@ -45,7 +44,6 @@ class GoogleMapsMCPServer {
     }
 
     this.googleMapsClient = new GoogleMapsClient(apiKey);
-    this.ipOverrideEnabled = process.env.IP_OVERRIDE_ENABLED === 'true';
 
     this.server = new Server(
       {
@@ -528,7 +526,7 @@ class GoogleMapsMCPServer {
                 reverse_geocode: { type: 'boolean', description: 'Whether to reverse geocode the result' },
                 language: { type: 'string' },
                 region: { type: 'string' },
-                ip_override: { type: 'string', description: 'IP address to override (best-effort, requires IP_OVERRIDE_ENABLED)' }
+                ip_override: { type: 'string', description: 'Optional IP address to override for testing (best-effort)' }
               }
             }
           }
@@ -950,10 +948,6 @@ class GoogleMapsMCPServer {
     const input = IpGeolocateSchema.parse(args);
     
     // Validate IP override if provided
-    if (input.ip_override && !this.ipOverrideEnabled) {
-      throw { code: 'IP_OVERRIDE_DISABLED', message: 'IP override is not enabled on this server' };
-    }
-
     if (input.ip_override && !this.isValidIP(input.ip_override)) {
       throw { code: 'INVALID_IP', message: 'Invalid IP address format' };
     }

@@ -53,6 +53,26 @@ npm install google-maps-mcp-server
 
 Add the server to your MCP client configuration:
 
+#### Cursor
+
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=Google%20Maps&config=eyJlbnYiOnsiR09PR0xFX01BUFNfQVBJX0tFWSI6IjxJTlNFUlQgQVBJIEtFWSBIRVJFPiJ9LCJjb21tYW5kIjoibnB4IC15IGdvb2dsZS1tYXBzLW1jcC1zZXJ2ZXIifQ%3D%3D)
+
+Or manually add to your Cursor MCP settings (`~/.cursor/mcp.json` or through Settings > MCP Servers):
+
+```json
+{
+  "mcpServers": {
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "google-maps-mcp-server"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
 #### Claude Desktop
 
 Add to `claude_desktop_config.json`:
@@ -150,12 +170,36 @@ npx google-maps-mcp-server
 }
 ```
 
+### Geolocate by IP Address
+
+```json
+{
+  "tool": "ip_geolocate",
+  "arguments": {
+    "reverse_geocode": true
+  }
+}
+```
+
+The `ip_geolocate` tool also supports an optional `ip_override` parameter for testing with different IP addresses:
+
+```json
+{
+  "tool": "ip_geolocate",
+  "arguments": {
+    "ip_override": "8.8.8.8",
+    "reverse_geocode": true
+  }
+}
+```
+
+**Note:** The `ip_override` parameter accepts public IPv4 or IPv6 addresses. Private and reserved IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8) are rejected. The IP override is best-effort and Google's Geolocation API may not always honor the request.
+
 ## Configuration
 
 ### Environment Variables
 
 - **`GOOGLE_MAPS_API_KEY`** (required) - Your Google Maps Platform API key
-- **`IP_OVERRIDE_ENABLED`** (optional) - Enable IP override for testing (default: false)
 
 ### API Quotas and Billing
 
@@ -229,25 +273,8 @@ Common error codes:
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines and submit pull requests to our GitHub repository.
+Contributions are welcome! Please submit pull requests to our GitHub repository.
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## Support
-
-- 📖 [Google Maps Platform Documentation](https://developers.google.com/maps)
-- 🔧 [Model Context Protocol Specification](https://modelcontextprotocol.io/)
-- 🐛 [Report Issues](https://github.com/modelcontextprotocol/servers/issues)
-
-## Related
-
-- [@modelcontextprotocol/sdk](https://www.npmjs.com/package/@modelcontextprotocol/sdk) - MCP TypeScript SDK
-- [MCP Servers Collection](https://github.com/modelcontextprotocol/servers) - Other MCP servers
-
-## Author
-
-**David Pivonka**
-- GitHub: [@david-pivonka](https://github.com/david-pivonka)
-- Email: david@pivonka.com

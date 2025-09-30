@@ -16,8 +16,7 @@ async function testServer() {
   // Set test environment
   const env = {
     ...process.env,
-    GOOGLE_MAPS_API_KEY: TEST_API_KEY,
-    IP_OVERRIDE_ENABLED: 'false'
+    GOOGLE_MAPS_API_KEY: TEST_API_KEY
   };
 
   // Start the server

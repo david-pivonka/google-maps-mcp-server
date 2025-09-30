@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-09-30
+
+### Changed
+- Simplified IP override functionality - `ip_override` parameter is now always available as an optional argument for `ip_geolocate` tool
+- Removed `IP_OVERRIDE_ENABLED` environment variable requirement
+- IP validation still enforces public IP addresses only (rejects private/reserved ranges)
+
+### Added
+- Cursor IDE installation instructions with one-click install button
+- Enhanced documentation for `ip_geolocate` tool with usage examples
+
+### Removed
+- `IP_OVERRIDE_ENABLED` environment variable (breaking change - but `ip_override` functionality still available)
+
 ## [1.0.0] - 2025-09-30
 
 ### Added
