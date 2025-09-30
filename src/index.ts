@@ -76,12 +76,12 @@ function loadConfig(): ServerConfig {
 
 function setupErrorHandling() {
   process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
+    process.stderr.write(`Uncaught Exception: ${error}\n`);
     process.exit(1);
   });
 
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.stderr.write(`Unhandled Rejection: ${reason}\n`);
     process.exit(1);
   });
 }
@@ -131,10 +131,10 @@ async function main() {
 
   } catch (error) {
     if (error instanceof ConfigurationError) {
-      console.error('Configuration Error:', error.message);
+      process.stderr.write(`Configuration Error: ${error.message}\n`);
       process.exit(1);
     } else {
-      console.error('Failed to start server:', error);
+      process.stderr.write(`Failed to start server: ${error}\n`);
       process.exit(1);
     }
   }
@@ -143,7 +143,7 @@ async function main() {
 // Only run if this file is executed directly
 if (require.main === module) {
   main().catch((error) => {
-    console.error('Fatal error:', error);
+    process.stderr.write(`Fatal error: ${error}\n`);
     process.exit(1);
   });
 }

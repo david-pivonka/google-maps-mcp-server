@@ -42,7 +42,7 @@ export function createIpGeolocateHandler(client: GoogleMapsClient, config: Serve
       ipOverrideAttempted = true;
     } else if (input.ip_override && !config.ipOverrideEnabled) {
       // Log warning but don't fail
-      console.warn('IP override requested but not enabled in server configuration');
+      process.stderr.write('Warning: IP override requested but not enabled in server configuration\n');
     }
 
     // Call Google Geolocation API with IP consideration
@@ -79,7 +79,7 @@ export function createIpGeolocateHandler(client: GoogleMapsClient, config: Serve
         }
       } catch (error) {
         // Don't fail the whole request if reverse geocoding fails
-        console.warn('Reverse geocoding failed:', error);
+        process.stderr.write(`Warning: Reverse geocoding failed: ${error}\n`);
       }
     }
 
