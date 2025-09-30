@@ -1,0 +1,12 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "call_tool",
+  "params": {
+    "name": "ip_geolocate",
+    "arguments": {
+      "reverse_geocode": true,
+      "language": "en"
+    }
+  }
+}

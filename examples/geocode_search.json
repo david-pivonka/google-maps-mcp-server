@@ -1,0 +1,13 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "call_tool",
+  "params": {
+    "name": "geocode_search",
+    "arguments": {
+      "query": "1600 Amphitheatre Parkway, Mountain View, CA",
+      "language": "en",
+      "region": "US"
+    }
+  }
+}

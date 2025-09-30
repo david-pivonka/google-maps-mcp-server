@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "call_tool",
+  "params": {
+    "name": "health_check",
+    "arguments": {}
+  }
+}

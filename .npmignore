@@ -1,0 +1,27 @@
+# Source files (publish compiled dist/ instead)
+src/
+tsconfig.json
+
+# Development files
+test-server.js
+examples/
+DEPLOYMENT.md
+
+# Git files
+.git/
+.gitignore
+
+# Environment and config
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
