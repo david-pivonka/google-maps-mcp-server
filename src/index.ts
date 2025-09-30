@@ -6,54 +6,54 @@ import { GoogleMapsClient } from './utils/google-maps-client.js';
 
 // Import all tools
 import {
-    createGeocodeReverseHandler,
-    createGeocodeSearchHandler,
-    geocodeReverseTool,
-    geocodeSearchTool
+  createGeocodeReverseHandler,
+  createGeocodeSearchHandler,
+  geocodeReverseTool,
+  geocodeSearchTool
 } from './tools/geocoding.js';
 
 import {
-    createPlacesAutocompleteHandler,
-    createPlacesDetailsHandler,
-    createPlacesNearbyHandler,
-    createPlacesPhotosHandler,
-    createPlacesSearchTextHandler,
-    placesAutocompleteTool,
-    placesDetailsTool,
-    placesNearbyTool,
-    placesPhotosTool,
-    placesSearchTextTool
+  createPlacesAutocompleteHandler,
+  createPlacesDetailsHandler,
+  createPlacesNearbyHandler,
+  createPlacesPhotosHandler,
+  createPlacesSearchTextHandler,
+  placesAutocompleteTool,
+  placesDetailsTool,
+  placesNearbyTool,
+  placesPhotosTool,
+  placesSearchTextTool
 } from './tools/places.js';
 
 import {
-    createRoutesComputeHandler,
-    createRoutesMatrixHandler,
-    routesComputeTool,
-    routesMatrixTool
+  createRoutesComputeHandler,
+  createRoutesMatrixHandler,
+  routesComputeTool,
+  routesMatrixTool
 } from './tools/routes.js';
 
 import {
-    createElevationGetHandler,
-    createGeolocationEstimateHandler,
-    createTimezoneGetHandler,
-    elevationGetTool,
-    geolocationEstimateTool,
-    timezoneGetTool
+  createElevationGetHandler,
+  createGeolocationEstimateHandler,
+  createTimezoneGetHandler,
+  elevationGetTool,
+  geolocationEstimateTool,
+  timezoneGetTool
 } from './tools/utilities.js';
 
 import {
-    createNearbyFindHandler,
-    nearbyFindTool
+  createNearbyFindHandler,
+  nearbyFindTool
 } from './tools/nearby-find.js';
 
 import {
-    createIpGeolocateHandler,
-    ipGeolocateTool
+  createIpGeolocateHandler,
+  ipGeolocateTool
 } from './tools/ip-geolocate.js';
 
 import {
-    createHealthCheckHandler,
-    healthCheckTool
+  createHealthCheckHandler,
+  healthCheckTool
 } from './tools/health-check.js';
 
 function loadConfig(): ServerConfig {
