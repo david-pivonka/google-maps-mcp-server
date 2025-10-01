@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "mcp-google-maps": "./dist/index.js"
+    "mcp-google-maps": "dist/index.js"
   },
   "files": [
     "dist/**/*",
@@ -41,7 +41,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/david-pivonka/google-maps-mcp-server.git"
+    "url": "git+https://github.com/david-pivonka/google-maps-mcp-server.git"
   },
   "bugs": {
     "url": "https://github.com/david-pivonka/google-maps-mcp-server/issues"

@@ -85,7 +85,7 @@ class GoogleMapsMCPServer {
             inputSchema: {
               type: 'object',
               properties: {
-                query: { type: 'string', description: 'Address or place name to geocode' },
+                query: { type: 'string', description: 'Address or place name to geocode. Examples: "1600 Amphitheatre Parkway, Mountain View, CA", "Eiffel Tower", "Tokyo, Japan"' },
                 region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
                 language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' }
               },
@@ -113,12 +113,12 @@ class GoogleMapsMCPServer {
             inputSchema: {
               type: 'object',
               properties: {
-                query: { type: 'string', description: 'Text search query' },
+                query: { type: 'string', description: 'Text search query for places. Examples: "pizza near me", "Italian restaurants in Rome", "gas stations", "Starbucks in Seattle"' },
                 included_types: { type: 'array', items: { type: 'string' }, description: 'Place types to include' },
                 excluded_types: { type: 'array', items: { type: 'string' }, description: 'Place types to exclude' },
                 open_now: { type: 'boolean', description: 'Filter for places open now' },
-                price_levels: { type: 'array', items: { type: 'number' }, description: 'Price levels (0-4)' },
-                min_rating: { type: 'number', description: 'Minimum rating filter' },
+                price_levels: { type: 'array', items: { type: 'number' }, description: 'Price levels to filter by (0=Free, 1=Inexpensive, 2=Moderate, 3=Expensive, 4=Very Expensive). Example: [1, 2] for inexpensive to moderate' },
+                min_rating: { type: 'number', description: 'Minimum rating filter (1.0-5.0). Example: 4.0 for highly rated places only' },
                 location_bias: {
                   type: 'object',
                   properties: {
@@ -155,10 +155,10 @@ class GoogleMapsMCPServer {
               properties: {
                 location: {
                   type: 'object',
-                  description: 'Geographic coordinates of the center point for the search',
+                  description: 'Geographic coordinates of the center point for the search. Provide as {"lat": 37.7749, "lng": -122.4194}',
                   properties: {
-                    lat: { type: 'number', description: 'Latitude' },
-                    lng: { type: 'number', description: 'Longitude' }
+                    lat: { type: 'number', description: 'Latitude coordinate (e.g., 37.7749 for San Francisco)' },
+                    lng: { type: 'number', description: 'Longitude coordinate (e.g., -122.4194 for San Francisco)' }
                   },
                   required: ['lat', 'lng']
                 },
@@ -177,7 +177,7 @@ class GoogleMapsMCPServer {
             inputSchema: {
               type: 'object',
               properties: {
-                input: { type: 'string', description: 'Input text for autocomplete' },
+                input: { type: 'string', description: 'Input text for autocomplete suggestions. Examples: "pizza", "123 Main", "Eiffel Tow"' },
                 session_token: { type: 'string', description: 'Session token for billing' },
                 location_bias: {
                   type: 'object',
@@ -216,7 +216,7 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 place_id: { type: 'string', description: 'Place ID' },
-                fields: { type: 'array', items: { type: 'string' }, description: 'Fields to return' },
+                fields: { type: 'array', items: { type: 'string' }, description: 'Specific fields to return from place details. Examples: ["name", "formatted_address", "opening_hours", "rating", "reviews"]' },
                 language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
                 region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
                 session_token: { type: 'string', description: 'Session token for billing (optional)' }
@@ -246,14 +246,14 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 origin: {
-                  description: 'Starting location for the route',
+                  description: 'Starting location for the route. Provide either coordinates like {"lat": 37.7749, "lng": -122.4194} or an address like {"address": "123 Main St, San Francisco, CA"}',
                   oneOf: [
                     {
                       type: 'object',
                       description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number', description: 'Latitude' },
-                        lng: { type: 'number', description: 'Longitude' }
+                        lat: { type: 'number', description: 'Latitude (e.g., 37.7749)' },
+                        lng: { type: 'number', description: 'Longitude (e.g., -122.4194)' }
                       },
                       required: ['lat', 'lng']
                     },
@@ -261,21 +261,21 @@ class GoogleMapsMCPServer {
                       type: 'object',
                       description: 'Text address',
                       properties: {
-                        address: { type: 'string', description: 'Address string' }
+                        address: { type: 'string', description: 'Full address string (e.g., "123 Main St, San Francisco, CA")' }
                       },
                       required: ['address']
                     }
                   ]
                 },
                 destination: {
-                  description: 'Ending location for the route',
+                  description: 'Ending location for the route. Provide either coordinates like {"lat": 40.7128, "lng": -74.0060} or an address like {"address": "456 Broadway, New York, NY"}',
                   oneOf: [
                     {
                       type: 'object',
                       description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number', description: 'Latitude' },
-                        lng: { type: 'number', description: 'Longitude' }
+                        lat: { type: 'number', description: 'Latitude (e.g., 40.7128)' },
+                        lng: { type: 'number', description: 'Longitude (e.g., -74.0060)' }
                       },
                       required: ['lat', 'lng']
                     },
@@ -283,7 +283,7 @@ class GoogleMapsMCPServer {
                       type: 'object',
                       description: 'Text address',
                       properties: {
-                        address: { type: 'string', description: 'Address string' }
+                        address: { type: 'string', description: 'Full address string (e.g., "456 Broadway, New York, NY")' }
                       },
                       required: ['address']
                     }
@@ -291,19 +291,19 @@ class GoogleMapsMCPServer {
                 },
                 waypoints: {
                   type: 'array',
-                  description: 'Intermediate stops along the route',
+                  description: 'Optional intermediate stops along the route. Each waypoint should have a "location" (coordinates or address) and optionally "via": true for pass-through points. Example: [{"location": {"lat": 38.0, "lng": -122.0}, "via": false}]',
                   items: {
                     type: 'object',
                     properties: {
                       location: {
-                        description: 'Waypoint location',
+                        description: 'Waypoint location - provide coordinates like {"lat": 38.0, "lng": -122.0} or address like {"address": "Waypoint City, State"}',
                         oneOf: [
                           {
                             type: 'object',
                             description: 'Geographic coordinates',
                             properties: {
-                              lat: { type: 'number', description: 'Latitude' },
-                              lng: { type: 'number', description: 'Longitude' }
+                              lat: { type: 'number', description: 'Latitude (e.g., 38.0)' },
+                              lng: { type: 'number', description: 'Longitude (e.g., -122.0)' }
                             },
                             required: ['lat', 'lng']
                           },
@@ -311,13 +311,13 @@ class GoogleMapsMCPServer {
                             type: 'object',
                             description: 'Text address',
                             properties: {
-                              address: { type: 'string', description: 'Address string' }
+                              address: { type: 'string', description: 'Full address string (e.g., "Waypoint City, State")' }
                             },
                             required: ['address']
                           }
                         ]
                       },
-                      via: { type: 'boolean', description: 'Whether to treat as via point (not stopping point)' }
+                      via: { type: 'boolean', description: 'Whether to treat as via point (true = pass through without stopping, false = stop at this location)' }
                     },
                     required: ['location']
                   }
@@ -343,16 +343,16 @@ class GoogleMapsMCPServer {
               properties: {
                 origins: {
                   type: 'array',
-                  description: 'Starting locations for distance calculations',
+                  description: 'Array of starting locations for distance calculations. Each location should be either coordinates like {"lat": 37.7749, "lng": -122.4194} or an address like {"address": "San Francisco, CA"}',
                   items: {
-                    description: 'Origin location',
+                    description: 'Origin location - provide coordinates or address object',
                     oneOf: [
                       {
                         type: 'object',
                         description: 'Geographic coordinates',
                         properties: {
-                          lat: { type: 'number', description: 'Latitude' },
-                          lng: { type: 'number', description: 'Longitude' }
+                          lat: { type: 'number', description: 'Latitude (e.g., 37.7749)' },
+                          lng: { type: 'number', description: 'Longitude (e.g., -122.4194)' }
                         },
                         required: ['lat', 'lng']
                       },
@@ -360,7 +360,7 @@ class GoogleMapsMCPServer {
                         type: 'object',
                         description: 'Text address',
                         properties: {
-                          address: { type: 'string', description: 'Address string' }
+                          address: { type: 'string', description: 'Full address string (e.g., "San Francisco, CA")' }
                         },
                         required: ['address']
                       }
@@ -369,16 +369,16 @@ class GoogleMapsMCPServer {
                 },
                 destinations: {
                   type: 'array',
-                  description: 'Destination locations for distance calculations',
+                  description: 'Array of destination locations for distance calculations. Each location should be either coordinates like {"lat": 40.7128, "lng": -74.0060} or an address like {"address": "New York, NY"}',
                   items: {
-                    description: 'Destination location',
+                    description: 'Destination location - provide coordinates or address object',
                     oneOf: [
                       {
                         type: 'object',
                         description: 'Geographic coordinates',
                         properties: {
-                          lat: { type: 'number', description: 'Latitude' },
-                          lng: { type: 'number', description: 'Longitude' }
+                          lat: { type: 'number', description: 'Latitude (e.g., 40.7128)' },
+                          lng: { type: 'number', description: 'Longitude (e.g., -74.0060)' }
                         },
                         required: ['lat', 'lng']
                       },
@@ -386,7 +386,7 @@ class GoogleMapsMCPServer {
                         type: 'object',
                         description: 'Text address',
                         properties: {
-                          address: { type: 'string', description: 'Address string' }
+                          address: { type: 'string', description: 'Full address string (e.g., "New York, NY")' }
                         },
                         required: ['address']
                       }
@@ -423,7 +423,7 @@ class GoogleMapsMCPServer {
                     required: ['lat', 'lng']
                   }
                 },
-                path: { type: 'string', description: 'Encoded polyline path' },
+                path: { type: 'string', description: 'Encoded polyline path for elevation sampling. Use Google\'s polyline encoding format' },
                 samples: { type: 'number', description: 'Number of samples along path' }
               }
             }
@@ -494,13 +494,13 @@ class GoogleMapsMCPServer {
               properties: {
                 points: {
                   type: 'array',
-                  description: 'Array of coordinates to find nearest roads for',
+                  description: 'Array of geographic coordinates to find nearest roads for. Each point should be an object like {"lat": 40.7128, "lng": -74.0060}',
                   items: {
                     type: 'object',
-                    description: 'Geographic coordinates',
+                    description: 'Geographic coordinates for road lookup',
                     properties: {
-                      lat: { type: 'number', description: 'Latitude' },
-                      lng: { type: 'number', description: 'Longitude' }
+                      lat: { type: 'number', description: 'Latitude coordinate (e.g., 40.7128 for NYC)' },
+                      lng: { type: 'number', description: 'Longitude coordinate (e.g., -74.0060 for NYC)' }
                     },
                     required: ['lat', 'lng']
                   }
@@ -519,14 +519,14 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 origin: {
-                  description: 'Starting location for the search',
+                  description: 'Starting location for the search. Provide either coordinates like {"lat": 37.7749, "lng": -122.4194} or an address like {"address": "San Francisco, CA"}',
                   oneOf: [
                     {
                       type: 'object',
                       description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number', description: 'Latitude' },
-                        lng: { type: 'number', description: 'Longitude' }
+                        lat: { type: 'number', description: 'Latitude (e.g., 37.7749)' },
+                        lng: { type: 'number', description: 'Longitude (e.g., -122.4194)' }
                       },
                       required: ['lat', 'lng']
                     },
@@ -534,14 +534,14 @@ class GoogleMapsMCPServer {
                       type: 'object',
                       description: 'Text address',
                       properties: {
-                        address: { type: 'string', description: 'Address string' }
+                        address: { type: 'string', description: 'Full address string (e.g., "San Francisco, CA")' }
                       },
                       required: ['address']
                     }
                   ]
                 },
-                what: { type: 'string', enum: ['cities', 'towns', 'pois', 'custom'], description: 'Type of places to search for: cities, towns, points of interest, or custom types' },
-                included_types: { type: 'array', items: { type: 'string' }, description: 'Specific place types to include (used with what=custom or pois)' },
+                what: { type: 'string', enum: ['cities', 'towns', 'pois', 'custom'], description: 'Type of places to search for: "cities" for major cities, "towns" for smaller localities, "pois" for points of interest, "custom" for specific types via included_types' },
+                included_types: { type: 'array', items: { type: 'string' }, description: 'Specific place types to include (used with what=custom or pois). Example: ["restaurant", "gas_station", "tourist_attraction"]' },
                 radius_meters: { type: 'number', default: 30000, description: 'Search radius in meters (default: 30000)' },
                 max_results: { type: 'number', default: 20, description: 'Maximum number of results to return (default: 20)' },
                 language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
