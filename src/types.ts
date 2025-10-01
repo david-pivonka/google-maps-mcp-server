@@ -167,7 +167,6 @@ export const NearbyFindSchema = z.object({
 export const IpGeolocateSchema = z.object({
   reverse_geocode: z.boolean().optional(),
   language: z.string().optional(),
-  region: z.string().optional(),
   ip_override: z.string().optional()
 });
 

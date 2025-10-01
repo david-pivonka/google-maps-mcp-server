@@ -86,8 +86,8 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 query: { type: 'string', description: 'Address or place name to geocode' },
-                region: { type: 'string', description: 'Region code for biasing results (optional)' },
-                language: { type: 'string', description: 'Language code for results (optional)' }
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' }
               },
               required: ['query']
             }
@@ -100,7 +100,7 @@ class GoogleMapsMCPServer {
               properties: {
                 lat: { type: 'number', description: 'Latitude' },
                 lng: { type: 'number', description: 'Longitude' },
-                language: { type: 'string', description: 'Language code for results (optional)' }
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' }
               },
               required: ['lat', 'lng']
             }
@@ -139,9 +139,9 @@ class GoogleMapsMCPServer {
                     }
                   }
                 },
-                rank_preference: { type: 'string', enum: ['RELEVANCE', 'DISTANCE'] },
-                language: { type: 'string' },
-                region: { type: 'string' },
+                rank_preference: { type: 'string', enum: ['RELEVANCE', 'DISTANCE'], description: 'How to rank the results' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
                 max_results: { type: 'number', minimum: 1, maximum: 20 }
               },
               required: ['query']
@@ -155,17 +155,18 @@ class GoogleMapsMCPServer {
               properties: {
                 location: {
                   type: 'object',
+                  description: 'Geographic coordinates of the center point for the search',
                   properties: {
-                    lat: { type: 'number' },
-                    lng: { type: 'number' }
+                    lat: { type: 'number', description: 'Latitude' },
+                    lng: { type: 'number', description: 'Longitude' }
                   },
                   required: ['lat', 'lng']
                 },
                 radius_meters: { type: 'number', description: 'Search radius in meters' },
-                included_types: { type: 'array', items: { type: 'string' } },
-                max_results: { type: 'number', minimum: 1, maximum: 20 },
-                language: { type: 'string' },
-                region: { type: 'string' }
+                included_types: { type: 'array', items: { type: 'string' }, description: 'Place types to include in search' },
+                max_results: { type: 'number', minimum: 1, maximum: 20, description: 'Maximum number of results to return' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' }
               },
               required: ['location', 'radius_meters']
             }
@@ -180,27 +181,30 @@ class GoogleMapsMCPServer {
                 session_token: { type: 'string', description: 'Session token for billing' },
                 location_bias: {
                   type: 'object',
+                  description: 'Geographic region to bias search results toward',
                   properties: {
                     circle: {
                       type: 'object',
+                      description: 'Circular region defined by center point and radius',
                       properties: {
                         center: {
                           type: 'object',
+                          description: 'Center coordinates of the bias circle',
                           properties: {
-                            lat: { type: 'number' },
-                            lng: { type: 'number' }
+                            lat: { type: 'number', description: 'Latitude' },
+                            lng: { type: 'number', description: 'Longitude' }
                           },
                           required: ['lat', 'lng']
                         },
-                        radius_meters: { type: 'number' }
+                        radius_meters: { type: 'number', description: 'Radius in meters' }
                       },
                       required: ['center', 'radius_meters']
                     }
                   }
                 },
-                included_types: { type: 'array', items: { type: 'string' } },
-                language: { type: 'string' },
-                region: { type: 'string' }
+                included_types: { type: 'array', items: { type: 'string' }, description: 'Place types to include in suggestions' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' }
               },
               required: ['input']
             }
@@ -213,9 +217,9 @@ class GoogleMapsMCPServer {
               properties: {
                 place_id: { type: 'string', description: 'Place ID' },
                 fields: { type: 'array', items: { type: 'string' }, description: 'Fields to return' },
-                language: { type: 'string' },
-                region: { type: 'string' },
-                session_token: { type: 'string' }
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
+                session_token: { type: 'string', description: 'Session token for billing (optional)' }
               },
               required: ['place_id']
             }
@@ -242,38 +246,44 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 origin: {
+                  description: 'Starting location for the route',
                   oneOf: [
                     {
                       type: 'object',
+                      description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number' },
-                        lng: { type: 'number' }
+                        lat: { type: 'number', description: 'Latitude' },
+                        lng: { type: 'number', description: 'Longitude' }
                       },
                       required: ['lat', 'lng']
                     },
                     {
                       type: 'object',
+                      description: 'Text address',
                       properties: {
-                        address: { type: 'string' }
+                        address: { type: 'string', description: 'Address string' }
                       },
                       required: ['address']
                     }
                   ]
                 },
                 destination: {
+                  description: 'Ending location for the route',
                   oneOf: [
                     {
                       type: 'object',
+                      description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number' },
-                        lng: { type: 'number' }
+                        lat: { type: 'number', description: 'Latitude' },
+                        lng: { type: 'number', description: 'Longitude' }
                       },
                       required: ['lat', 'lng']
                     },
                     {
                       type: 'object',
+                      description: 'Text address',
                       properties: {
-                        address: { type: 'string' }
+                        address: { type: 'string', description: 'Address string' }
                       },
                       required: ['address']
                     }
@@ -281,42 +291,46 @@ class GoogleMapsMCPServer {
                 },
                 waypoints: {
                   type: 'array',
+                  description: 'Intermediate stops along the route',
                   items: {
                     type: 'object',
                     properties: {
                       location: {
+                        description: 'Waypoint location',
                         oneOf: [
                           {
                             type: 'object',
+                            description: 'Geographic coordinates',
                             properties: {
-                              lat: { type: 'number' },
-                              lng: { type: 'number' }
+                              lat: { type: 'number', description: 'Latitude' },
+                              lng: { type: 'number', description: 'Longitude' }
                             },
                             required: ['lat', 'lng']
                           },
                           {
                             type: 'object',
+                            description: 'Text address',
                             properties: {
-                              address: { type: 'string' }
+                              address: { type: 'string', description: 'Address string' }
                             },
                             required: ['address']
                           }
                         ]
                       },
-                      via: { type: 'boolean' }
+                      via: { type: 'boolean', description: 'Whether to treat as via point (not stopping point)' }
                     },
                     required: ['location']
                   }
                 },
-                travel_mode: { type: 'string', enum: ['DRIVE', 'WALK', 'BICYCLE', 'TRANSIT'] },
-                routing_preference: { type: 'string', enum: ['TRAFFIC_UNAWARE', 'TRAFFIC_AWARE', 'TRAFFIC_AWARE_OPTIMAL'] },
-                compute_alternative_routes: { type: 'boolean' },
-                avoid_tolls: { type: 'boolean' },
-                avoid_highways: { type: 'boolean' },
-                avoid_ferries: { type: 'boolean' },
-                language: { type: 'string' },
-                region: { type: 'string' },
-                units: { type: 'string', enum: ['METRIC', 'IMPERIAL'] }
+                travel_mode: { type: 'string', enum: ['DRIVE', 'WALK', 'BICYCLE', 'TRANSIT'], description: 'Transportation mode for the route' },
+                routing_preference: { type: 'string', enum: ['TRAFFIC_UNAWARE', 'TRAFFIC_AWARE', 'TRAFFIC_AWARE_OPTIMAL'], description: 'Routing algorithm preference' },
+                compute_alternative_routes: { type: 'boolean', description: 'Whether to compute alternative routes' },
+                avoid_tolls: { type: 'boolean', description: 'Avoid toll roads' },
+                avoid_highways: { type: 'boolean', description: 'Avoid highways' },
+                avoid_ferries: { type: 'boolean', description: 'Avoid ferries' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
+                units: { type: 'string', enum: ['METRIC', 'IMPERIAL'], description: 'Unit system for distances' }
               },
               required: ['origin', 'destination']
             }
@@ -329,20 +343,24 @@ class GoogleMapsMCPServer {
               properties: {
                 origins: {
                   type: 'array',
+                  description: 'Starting locations for distance calculations',
                   items: {
+                    description: 'Origin location',
                     oneOf: [
                       {
                         type: 'object',
+                        description: 'Geographic coordinates',
                         properties: {
-                          lat: { type: 'number' },
-                          lng: { type: 'number' }
+                          lat: { type: 'number', description: 'Latitude' },
+                          lng: { type: 'number', description: 'Longitude' }
                         },
                         required: ['lat', 'lng']
                       },
                       {
                         type: 'object',
+                        description: 'Text address',
                         properties: {
-                          address: { type: 'string' }
+                          address: { type: 'string', description: 'Address string' }
                         },
                         required: ['address']
                       }
@@ -351,31 +369,35 @@ class GoogleMapsMCPServer {
                 },
                 destinations: {
                   type: 'array',
+                  description: 'Destination locations for distance calculations',
                   items: {
+                    description: 'Destination location',
                     oneOf: [
                       {
                         type: 'object',
+                        description: 'Geographic coordinates',
                         properties: {
-                          lat: { type: 'number' },
-                          lng: { type: 'number' }
+                          lat: { type: 'number', description: 'Latitude' },
+                          lng: { type: 'number', description: 'Longitude' }
                         },
                         required: ['lat', 'lng']
                       },
                       {
                         type: 'object',
+                        description: 'Text address',
                         properties: {
-                          address: { type: 'string' }
+                          address: { type: 'string', description: 'Address string' }
                         },
                         required: ['address']
                       }
                     ]
                   }
                 },
-                travel_mode: { type: 'string', enum: ['DRIVE', 'WALK', 'BICYCLE', 'TRANSIT'] },
-                routing_preference: { type: 'string', enum: ['TRAFFIC_UNAWARE', 'TRAFFIC_AWARE', 'TRAFFIC_AWARE_OPTIMAL'] },
-                language: { type: 'string' },
-                region: { type: 'string' },
-                units: { type: 'string', enum: ['METRIC', 'IMPERIAL'] }
+                travel_mode: { type: 'string', enum: ['DRIVE', 'WALK', 'BICYCLE', 'TRANSIT'], description: 'Transportation mode for distance calculations' },
+                routing_preference: { type: 'string', enum: ['TRAFFIC_UNAWARE', 'TRAFFIC_AWARE', 'TRAFFIC_AWARE_OPTIMAL'], description: 'Routing algorithm preference' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' },
+                units: { type: 'string', enum: ['METRIC', 'IMPERIAL'], description: 'Unit system for distances' }
               },
               required: ['origins', 'destinations']
             }
@@ -390,11 +412,13 @@ class GoogleMapsMCPServer {
               properties: {
                 locations: {
                   type: 'array',
+                  description: 'Array of coordinates to get elevation data for',
                   items: {
                     type: 'object',
+                    description: 'Geographic coordinates',
                     properties: {
-                      lat: { type: 'number' },
-                      lng: { type: 'number' }
+                      lat: { type: 'number', description: 'Latitude' },
+                      lng: { type: 'number', description: 'Longitude' }
                     },
                     required: ['lat', 'lng']
                   }
@@ -410,10 +434,10 @@ class GoogleMapsMCPServer {
             inputSchema: {
               type: 'object',
               properties: {
-                lat: { type: 'number' },
-                lng: { type: 'number' },
+                lat: { type: 'number', description: 'Latitude of the location' },
+                lng: { type: 'number', description: 'Longitude of the location' },
                 timestamp: { type: 'number', description: 'Unix timestamp (optional)' },
-                language: { type: 'string' }
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' }
               },
               required: ['lat', 'lng']
             }
@@ -426,35 +450,39 @@ class GoogleMapsMCPServer {
               properties: {
                 wifi_access_points: {
                   type: 'array',
+                  description: 'Array of WiFi access points detected by the device',
                   items: {
                     type: 'object',
+                    description: 'WiFi access point data',
                     properties: {
-                      mac_address: { type: 'string' },
-                      signal_strength: { type: 'number' },
-                      age: { type: 'number' },
-                      channel: { type: 'number' },
-                      signal_to_noise: { type: 'number' }
+                      mac_address: { type: 'string', description: 'MAC address of the WiFi access point' },
+                      signal_strength: { type: 'number', description: 'Signal strength in dBm' },
+                      age: { type: 'number', description: 'Age of the measurement in milliseconds' },
+                      channel: { type: 'number', description: 'WiFi channel number' },
+                      signal_to_noise: { type: 'number', description: 'Signal-to-noise ratio' }
                     },
                     required: ['mac_address']
                   }
                 },
                 cell_towers: {
                   type: 'array',
+                  description: 'Array of cell towers detected by the device',
                   items: {
                     type: 'object',
+                    description: 'Cell tower data',
                     properties: {
-                      cell_id: { type: 'number' },
-                      location_area_code: { type: 'number' },
-                      mobile_country_code: { type: 'number' },
-                      mobile_network_code: { type: 'number' },
-                      age: { type: 'number' },
-                      signal_strength: { type: 'number' },
-                      timing_advance: { type: 'number' }
+                      cell_id: { type: 'number', description: 'Cell tower ID' },
+                      location_area_code: { type: 'number', description: 'Location area code' },
+                      mobile_country_code: { type: 'number', description: 'Mobile country code' },
+                      mobile_network_code: { type: 'number', description: 'Mobile network code' },
+                      age: { type: 'number', description: 'Age of the measurement in milliseconds' },
+                      signal_strength: { type: 'number', description: 'Signal strength in dBm' },
+                      timing_advance: { type: 'number', description: 'Timing advance value' }
                     },
                     required: ['cell_id', 'location_area_code', 'mobile_country_code', 'mobile_network_code']
                   }
                 },
-                consider_ip: { type: 'boolean' }
+                consider_ip: { type: 'boolean', description: 'Whether to use IP address for location estimation' }
               }
             }
           },
@@ -466,16 +494,18 @@ class GoogleMapsMCPServer {
               properties: {
                 points: {
                   type: 'array',
+                  description: 'Array of coordinates to find nearest roads for',
                   items: {
                     type: 'object',
+                    description: 'Geographic coordinates',
                     properties: {
-                      lat: { type: 'number' },
-                      lng: { type: 'number' }
+                      lat: { type: 'number', description: 'Latitude' },
+                      lng: { type: 'number', description: 'Longitude' }
                     },
                     required: ['lat', 'lng']
                   }
                 },
-                travel_mode: { type: 'string', enum: ['DRIVING', 'WALKING', 'BICYCLING'] }
+                travel_mode: { type: 'string', enum: ['DRIVING', 'WALKING', 'BICYCLING'], description: 'Travel mode for road network' }
               },
               required: ['points']
             }
@@ -489,30 +519,33 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 origin: {
+                  description: 'Starting location for the search',
                   oneOf: [
                     {
                       type: 'object',
+                      description: 'Geographic coordinates',
                       properties: {
-                        lat: { type: 'number' },
-                        lng: { type: 'number' }
+                        lat: { type: 'number', description: 'Latitude' },
+                        lng: { type: 'number', description: 'Longitude' }
                       },
                       required: ['lat', 'lng']
                     },
                     {
                       type: 'object',
+                      description: 'Text address',
                       properties: {
-                        address: { type: 'string' }
+                        address: { type: 'string', description: 'Address string' }
                       },
                       required: ['address']
                     }
                   ]
                 },
-                what: { type: 'string', enum: ['cities', 'towns', 'pois', 'custom'] },
-                included_types: { type: 'array', items: { type: 'string' } },
-                radius_meters: { type: 'number', default: 30000 },
-                max_results: { type: 'number', default: 20 },
-                language: { type: 'string' },
-                region: { type: 'string' }
+                what: { type: 'string', enum: ['cities', 'towns', 'pois', 'custom'], description: 'Type of places to search for: cities, towns, points of interest, or custom types' },
+                included_types: { type: 'array', items: { type: 'string' }, description: 'Specific place types to include (used with what=custom or pois)' },
+                radius_meters: { type: 'number', default: 30000, description: 'Search radius in meters (default: 30000)' },
+                max_results: { type: 'number', default: 20, description: 'Maximum number of results to return (default: 20)' },
+                language: { type: 'string', description: 'Language code for results (ISO 639-1, e.g., "en", "es", "fr")' },
+                region: { type: 'string', description: 'Region code for biasing results (ISO 3166-1 alpha-2, e.g., "US", "GB", "DE")' }
               },
               required: ['origin', 'what']
             }
@@ -524,8 +557,7 @@ class GoogleMapsMCPServer {
               type: 'object',
               properties: {
                 reverse_geocode: { type: 'boolean', description: 'Whether to reverse geocode the result' },
-                language: { type: 'string' },
-                region: { type: 'string' },
+                language: { type: 'string', description: 'Language code for the reverse geocoded address (ISO 639-1, e.g., "en", "es", "fr"). Only used when reverse_geocode is true' },
                 ip_override: { type: 'string', description: 'Optional IP address to override for testing (best-effort)' }
               }
             }
@@ -601,11 +633,11 @@ class GoogleMapsMCPServer {
 
     this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       const { uri } = request.params;
-      
+
       try {
         const content = getResourceContent(uri);
         const resource = GOOGLE_MAPS_RESOURCES.find(r => r.uri === uri);
-        
+
         return {
           contents: [
             {
@@ -625,7 +657,7 @@ class GoogleMapsMCPServer {
   private async handleGeocodeSearch(args: any) {
     const input = GeocodeSearchSchema.parse(args);
     const results = await this.googleMapsClient.geocodeSearch(input.query, input.region, input.language);
-    
+
     return {
       content: [
         {
@@ -639,7 +671,7 @@ class GoogleMapsMCPServer {
   private async handleGeocodeReverse(args: any) {
     const input = GeocodeReverseSchema.parse(args);
     const results = await this.googleMapsClient.geocodeReverse(input.lat, input.lng, input.language);
-    
+
     return {
       content: [
         {
@@ -664,7 +696,7 @@ class GoogleMapsMCPServer {
       region: input.region,
       maxResults: input.max_results
     });
-    
+
     return {
       content: [
         {
@@ -683,7 +715,7 @@ class GoogleMapsMCPServer {
       language: input.language,
       region: input.region
     });
-    
+
     return {
       content: [
         {
@@ -703,7 +735,7 @@ class GoogleMapsMCPServer {
       language: input.language,
       region: input.region
     });
-    
+
     return {
       content: [
         {
@@ -722,7 +754,7 @@ class GoogleMapsMCPServer {
       region: input.region,
       sessionToken: input.session_token
     });
-    
+
     return {
       content: [
         {
@@ -740,7 +772,7 @@ class GoogleMapsMCPServer {
       input.max_width,
       input.max_height
     );
-    
+
     return {
       content: [
         {
@@ -765,7 +797,7 @@ class GoogleMapsMCPServer {
       region: input.region,
       units: input.units
     });
-    
+
     return {
       content: [
         {
@@ -785,7 +817,7 @@ class GoogleMapsMCPServer {
       region: input.region,
       units: input.units
     });
-    
+
     return {
       content: [
         {
@@ -803,7 +835,7 @@ class GoogleMapsMCPServer {
       input.path,
       input.samples
     );
-    
+
     return {
       content: [
         {
@@ -822,7 +854,7 @@ class GoogleMapsMCPServer {
       input.timestamp,
       input.language
     );
-    
+
     return {
       content: [
         {
@@ -854,7 +886,7 @@ class GoogleMapsMCPServer {
       })),
       considerIp: input.consider_ip
     });
-    
+
     return {
       content: [
         {
@@ -868,7 +900,7 @@ class GoogleMapsMCPServer {
   private async handleRoadsNearest(args: any) {
     const input = RoadsNearestSchema.parse(args);
     const result = await this.googleMapsClient.roadsNearest(input.points, input.travel_mode);
-    
+
     return {
       content: [
         {
@@ -881,7 +913,7 @@ class GoogleMapsMCPServer {
 
   private async handleNearbyFind(args: any) {
     const input = NearbyFindSchema.parse(args);
-    
+
     // Resolve origin to coordinates if it's an address
     let originLocation: Location;
     if ('address' in input.origin) {
@@ -946,7 +978,7 @@ class GoogleMapsMCPServer {
 
   private async handleIpGeolocate(args: any) {
     const input = IpGeolocateSchema.parse(args);
-    
+
     // Validate IP override if provided
     if (input.ip_override && !this.isValidIP(input.ip_override)) {
       throw { code: 'INVALID_IP', message: 'Invalid IP address format' };
@@ -1016,7 +1048,7 @@ class GoogleMapsMCPServer {
     // Basic IPv4/IPv6 validation
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-    
+
     if (ipv4Regex.test(ip)) {
       // Check for private/reserved ranges
       const parts = ip.split('.').map(Number);
@@ -1026,7 +1058,7 @@ class GoogleMapsMCPServer {
       if (parts[0] === 127) return false; // 127.0.0.0/8
       return true;
     }
-    
+
     return ipv6Regex.test(ip);
   }
 
