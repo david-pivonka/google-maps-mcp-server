@@ -6,8 +6,28 @@ export class GoogleMapsClient {
   private cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
   private rateLimiter = new Map<string, number[]>();
 
+  // Rate limiting configuration
+  private rateLimitEnabled: boolean;
+  private rateLimitWindowMs: number;
+  private rateLimitMaxRequests: number;
+
   constructor(apiKey: string) {
     this.apiKey = apiKey;
+
+    // Configure rate limiting from environment variables
+    this.rateLimitEnabled = process.env.GOOGLE_MAPS_RATE_LIMIT_ENABLED !== 'false';
+    this.rateLimitWindowMs = parseInt(process.env.GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS || '60000'); // Default: 1 minute
+    this.rateLimitMaxRequests = parseInt(process.env.GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS || '100'); // Default: 100 requests
+
+    // Validate rate limit configuration
+    if (this.rateLimitWindowMs <= 0) {
+      console.warn('Invalid GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS, using default: 60000ms');
+      this.rateLimitWindowMs = 60000;
+    }
+    if (this.rateLimitMaxRequests <= 0) {
+      console.warn('Invalid GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS, using default: 100');
+      this.rateLimitMaxRequests = 100;
+    }
   }
 
   private async makeRequest(
@@ -31,7 +51,9 @@ export class GoogleMapsClient {
     }
 
     // Rate limiting check
-    await this.checkRateLimit(endpoint);
+    if (this.rateLimitEnabled) {
+      await this.checkRateLimit(endpoint);
+    }
 
     const url = new URL(`${customBaseUrl || this.baseUrl}${endpoint}`);
 
@@ -151,8 +173,6 @@ export class GoogleMapsClient {
 
   private async checkRateLimit(endpoint: string): Promise<void> {
     const now = Date.now();
-    const windowMs = 60000; // 1 minute
-    const maxRequests = 100; // Adjust based on your quota
 
     if (!this.rateLimiter.has(endpoint)) {
       this.rateLimiter.set(endpoint, []);
@@ -161,13 +181,13 @@ export class GoogleMapsClient {
     const requests = this.rateLimiter.get(endpoint)!;
 
     // Remove old requests outside the window
-    while (requests.length > 0 && now - requests[0] > windowMs) {
+    while (requests.length > 0 && now - requests[0] > this.rateLimitWindowMs) {
       requests.shift();
     }
 
-    if (requests.length >= maxRequests) {
+    if (requests.length >= this.rateLimitMaxRequests) {
       const oldestRequest = requests[0];
-      const waitTime = windowMs - (now - oldestRequest);
+      const waitTime = this.rateLimitWindowMs - (now - oldestRequest);
       await this.sleep(waitTime);
       return this.checkRateLimit(endpoint);
     }

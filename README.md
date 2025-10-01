@@ -15,12 +15,6 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Goog
 - 📊 **Rich Resources** - Built-in documentation and examples accessible via MCP resources
 - 🔒 **Security First** - Input validation, rate limiting, and secure API key handling
 
-## Installation
-
-```bash
-npm install google-maps-mcp-server
-```
-
 ## Quick Start
 
 ### 1. Get Google Maps API Key
@@ -33,21 +27,16 @@ npm install google-maps-mcp-server
 
 #### API Requirements by Tool
 
-| Tool | Required API | Google Cloud Console Name |
-|------|-------------|---------------------------|
-| `geocode_search`, `geocode_reverse` | Geocoding API | Geocoding API |
-| `places_search_text`, `places_nearby`, `places_autocomplete`, `places_details`, `places_photos` | Places API (New) | Places API (New) |
-| `routes_compute`, `routes_matrix` | Routes API | Routes API |
-| `elevation_get` | Elevation API | Elevation API |
-| `timezone_get` | Time Zone API | Time Zone API |
-| `geolocation_estimate` | Geolocation API | Geolocation API |
-| `roads_nearest` | Roads API | Roads API |
-| `ip_geolocate`, `nearby_find` | Multiple | Geolocation API + Places API (New) |
-
-**Minimum Required APIs** (for basic functionality):
-- **Geocoding API** - Address and coordinate conversion
-- **Places API (New)** - Place search and details (NOT the legacy Places API)
-- **Routes API** - Routing and distance calculations (NOT the legacy Directions/Distance Matrix APIs)
+| Tool | Required Google Cloud Console API |
+|------|-----------------------------------|
+| `geocode_search`, `geocode_reverse` | Geocoding API |
+| `places_search_text`, `places_nearby`, `places_autocomplete`, `places_details`, `places_photos` | Places API (New) |
+| `routes_compute`, `routes_matrix` | Routes API |
+| `elevation_get` | Elevation API |
+| `timezone_get` | Time Zone API |
+| `geolocation_estimate` | Geolocation API |
+| `roads_nearest` | Roads API |
+| `ip_geolocate`, `nearby_find` | Geolocation API + Places API (New) |
 
 ### 2. Configure MCP Client
 
@@ -55,9 +44,7 @@ Add the server to your MCP client configuration:
 
 #### Cursor
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=Google%20Maps&config=eyJlbnYiOnsiR09PR0xFX01BUFNfQVBJX0tFWSI6IjxJTlNFUlQgQVBJIEtFWSBIRVJFPiJ9LCJjb21tYW5kIjoibnB4IC15IGdvb2dsZS1tYXBzLW1jcC1zZXJ2ZXIifQ%3D%3D)
-
-Or manually add to your Cursor MCP settings (`~/.cursor/mcp.json` or through Settings > MCP Servers):
+Add to your Cursor MCP settings (`~/.cursor/mcp.json` or through Command Palette > Open MCP Settings > New MCP Server):
 
 ```json
 {
@@ -67,6 +54,25 @@ Or manually add to your Cursor MCP settings (`~/.cursor/mcp.json` or through Set
       "args": ["-y", "google-maps-mcp-server"],
       "env": {
         "GOOGLE_MAPS_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+With custom rate limiting:
+
+```json
+{
+  "mcpServers": {
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "google-maps-mcp-server"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "your-api-key-here",
+        "GOOGLE_MAPS_RATE_LIMIT_ENABLED": "true",
+        "GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS": "120000",
+        "GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS": "200"
       }
     }
   }
@@ -85,6 +91,23 @@ Add to `claude_desktop_config.json`:
       "args": ["google-maps-mcp-server"],
       "env": {
         "GOOGLE_MAPS_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+With rate limiting disabled:
+
+```json
+{
+  "mcpServers": {
+    "google-maps": {
+      "command": "npx",
+      "args": ["google-maps-mcp-server"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "your-api-key-here",
+        "GOOGLE_MAPS_RATE_LIMIT_ENABLED": "false"
       }
     }
   }
@@ -201,6 +224,36 @@ The `ip_geolocate` tool also supports an optional `ip_override` parameter for te
 
 - **`GOOGLE_MAPS_API_KEY`** (required) - Your Google Maps Platform API key
 
+#### Rate Limiting Configuration
+
+- **`GOOGLE_MAPS_RATE_LIMIT_ENABLED`** (optional, default: `true`) - Enable/disable rate limiting
+  - Set to `false` to disable rate limiting entirely
+- **`GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS`** (optional, default: `60000`) - Rate limit window in milliseconds
+  - Controls the time window for rate limiting (e.g., 60000 = 1 minute)
+- **`GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS`** (optional, default: `100`) - Maximum requests per window
+  - Maximum number of requests allowed per endpoint within the time window
+
+#### Example Rate Limiting Configurations
+
+```bash
+# Default rate limiting (100 requests per minute per endpoint)
+GOOGLE_MAPS_API_KEY="your-api-key-here"
+
+# Disable rate limiting entirely
+GOOGLE_MAPS_API_KEY="your-api-key-here"
+GOOGLE_MAPS_RATE_LIMIT_ENABLED=false
+
+# Custom rate limiting (200 requests per 2 minutes per endpoint)
+GOOGLE_MAPS_API_KEY="your-api-key-here"
+GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS=120000
+GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS=200
+
+# Stricter rate limiting (50 requests per 30 seconds per endpoint)
+GOOGLE_MAPS_API_KEY="your-api-key-here"
+GOOGLE_MAPS_RATE_LIMIT_WINDOW_MS=30000
+GOOGLE_MAPS_RATE_LIMIT_MAX_REQUESTS=50
+```
+
 ### API Quotas and Billing
 
 This server uses Google Maps Platform APIs which require billing to be enabled. Monitor your usage in the Google Cloud Console to avoid unexpected charges. Consider implementing usage limits in your application.
@@ -238,7 +291,8 @@ npm test
 
 ```bash
 npm run build
-npx @modelcontextprotocol/inspector npx google-maps-mcp-server
+
+GOOGLE_MAPS_API_KEY="your-api-key-here" npx @modelcontextprotocol/inspector ./dist/index.js
 ```
 
 ## Error Handling
