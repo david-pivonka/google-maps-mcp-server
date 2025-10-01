@@ -3,9 +3,9 @@ name: Publish to npm
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags (e.g., v1.4.0, v2.0.0)
+      - 'v*'
   release:
-    types: [published]  # Also trigger on GitHub releases
+    types: [published]
 
 jobs:
   publish:
@@ -13,7 +13,7 @@ jobs:
     environment: production
     permissions:
       contents: read
-      id-token: write  # Required for OIDC authentication with npm
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -36,5 +36,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
