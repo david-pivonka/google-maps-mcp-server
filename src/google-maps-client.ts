@@ -378,12 +378,13 @@ export class GoogleMapsClient {
       units?: string;
     } = {}
   ): Promise<{ routes: RouteResult[] }> {
+    const travelMode = options.travelMode || 'DRIVE';
     const body: any = {
       origin: this.formatLocationForRoutes(origin),
       destination: this.formatLocationForRoutes(destination),
-      travelMode: options.travelMode || 'DRIVE',
-      routingPreference: options.routingPreference || 'TRAFFIC_AWARE'
+      travelMode
     };
+    this.applyRoutingPreference(body, travelMode, options.routingPreference);
 
     if (options.waypoints?.length) {
       body.intermediates = options.waypoints.map(wp => this.formatLocationForRoutes(wp.location));
@@ -427,12 +428,13 @@ export class GoogleMapsClient {
       units?: string;
     } = {}
   ): Promise<any> {
+    const travelMode = options.travelMode || 'DRIVE';
     const body: any = {
       origins: origins.map(o => ({ waypoint: this.formatLocationForRoutes(o) })),
       destinations: destinations.map(d => ({ waypoint: this.formatLocationForRoutes(d) })),
-      travelMode: options.travelMode || 'DRIVE',
-      routingPreference: options.routingPreference || 'TRAFFIC_AWARE'
+      travelMode
     };
+    this.applyRoutingPreference(body, travelMode, options.routingPreference);
 
     if (options.language) body.languageCode = options.language;
     if (options.region) body.regionCode = options.region;
@@ -531,6 +533,17 @@ export class GoogleMapsClient {
   }
 
   // Helper methods
+  /**
+   * `routingPreference` is only valid for DRIVE and TWO_WHEELER. For WALK, BICYCLE and TRANSIT the
+   * Routes API rejects any value with "Routing preference cannot be set for WALK or BICYCLE
+   * routing mode", so it must be omitted entirely for those modes.
+   */
+  private applyRoutingPreference(body: any, travelMode: string, routingPreference?: string): void {
+    if (travelMode === 'DRIVE' || travelMode === 'TWO_WHEELER') {
+      body.routingPreference = routingPreference || 'TRAFFIC_AWARE';
+    }
+  }
+
   private formatLocationForRoutes(location: Location | { address: string }): any {
     if ('address' in location) {
       return { location: { address: location.address } };
